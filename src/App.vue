@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import Header from './Header.vue'
 import { Repl, useStore, SFCOptions, useVueImportMap } from '@vue/repl'
 import Monaco from '@vue/repl/monaco-editor'
 import { ref, watchEffect, onMounted, computed } from 'vue'
+import Header from './Header.vue'
+import { lightTheme, darkTheme } from 'naive-ui'
+import 'vfonts/Lato.css'
+// 等宽字体
+import 'vfonts/FiraCode.css'
 
 const replRef = ref<InstanceType<typeof Repl>>()
 
@@ -71,6 +75,25 @@ const store = useStore(
 // @ts-expect-error
 globalThis.store = store
 
+store.deleteFile = deleteFile
+function deleteFile(filename: string) {
+  window.$dialog.error({
+    title: '提示',
+    content: `确定要删除 ${filename} 吗？`,
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: () => {
+      console.log('store.mainFile-->', store.activeFile, store.mainFile)
+      if (store.activeFile.filename === filename) {
+        store.setActive(store.mainFile)
+      }
+      delete store.files[filename]
+    },
+    onNegativeClick: () => {
+      window.$message.error('已取消')
+    }
+  })
+}
 // persist state
 watchEffect(() => {
   const newHash = store
@@ -106,33 +129,19 @@ onMounted(() => {
 </script>
 
 <template>
-  <Header
-    :store="store"
-    :prod="productionMode"
-    :ssr="useSSRMode"
-    @toggle-theme="toggleTheme"
-    @toggle-prod="toggleProdMode"
-    @toggle-ssr="toggleSSR"
-    @reload-page="reloadPage"
-  />
-  <Repl
-    ref="replRef"
-    :theme="theme"
-    :editor="Monaco"
-    @keydown.ctrl.s.prevent
-    @keydown.meta.s.prevent
-    :ssr="useSSRMode"
-    :store="store"
-    :showCompileOutput="true"
-    :autoResize="true"
-    :clearConsole="false"
-    :preview-options="{
-      customCode: {
-        importCode: `import { initCustomFormatter } from 'vue'`,
-        useCode: `initCustomFormatter()`,
-      },
-    }"
-  />
+  <n-config-provider :theme="theme === 'dark' ? darkTheme : lightTheme"
+    :theme-overrides="{ common: { fontWeightStrong: '600' } }">
+    <Header :store="store" :prod="productionMode" :ssr="useSSRMode" @toggle-theme="toggleTheme"
+      @toggle-prod="toggleProdMode" @toggle-ssr="toggleSSR" @reload-page="reloadPage" />
+    <Repl ref="replRef" :theme="theme" :editor="Monaco" @keydown.ctrl.s.prevent @keydown.meta.s.prevent
+      :ssr="useSSRMode" :store="store" :showCompileOutput="true" :autoResize="true" :clearConsole="false"
+      :preview-options="{
+    customCode: {
+      importCode: `import { initCustomFormatter } from 'vue'`,
+      useCode: `initCustomFormatter()`,
+    },
+  }" />
+  </n-config-provider>
 </template>
 
 <style>

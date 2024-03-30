@@ -6,7 +6,7 @@ import Sun from './icons/Sun.vue'
 import Moon from './icons/Moon.vue'
 import Share from './icons/Share.vue'
 import Download from './icons/Download.vue'
-import GitHub from './icons/GitHub.vue'
+// import GitHub from './icons/Github.vue'
 import Reload from './icons/Reload.vue'
 import VersionSelect from './VersionSelect.vue'
 
@@ -48,7 +48,7 @@ async function copyLink(e: MouseEvent) {
     return
   }
   await navigator.clipboard.writeText(location.href)
-  alert('Sharable URL has been copied to clipboard.')
+  window.$message.info('Sharable URL has been copied to clipboard.')
 }
 
 function toggleDark() {
@@ -65,7 +65,7 @@ function toggleDark() {
 <template>
   <nav>
     <h1>
-      <img alt="logo" src="/logo.svg" />
+      <img alt="logo" src="/vite.svg" />
       <span>Vue SFC Playground</span>
     </h1>
     <div class="links">
@@ -124,14 +124,14 @@ function toggleDark() {
       >
         <Download />
       </button>
-      <a
+      <!-- <a
         href="https://github.com/vuejs/core/tree/main/packages/sfc-playground"
         target="_blank"
         title="View on GitHub"
         class="github"
       >
         <GitHub />
-      </a>
+      </a> -->
     </div>
   </nav>
 </template>

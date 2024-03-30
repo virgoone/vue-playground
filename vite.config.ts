@@ -1,12 +1,32 @@
 import fs from 'node:fs'
-import path from 'node:path'
+import path, { resolve } from 'node:path'
 import { type Plugin, defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { execaSync } from 'execa'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 const commit = execaSync('git', ['rev-parse', '--short=7', 'HEAD']).stdout
 
+function pathResolve(dir: string) {
+  return resolve(process.cwd(), '.', dir)
+}
+
 export default defineConfig({
+  resolve: {
+    alias: [
+      {
+        find: /\/#\//,
+        replacement: pathResolve('types') + '/'
+      },
+      {
+        find: '@',
+        replacement: pathResolve('src') + '/'
+      }
+    ],
+    dedupe: ['vue']
+  },
   plugins: [
     vue({
       script: {
@@ -15,6 +35,22 @@ export default defineConfig({
           readFile: file => fs.readFileSync(file, 'utf-8'),
         },
       },
+    }),
+    AutoImport({
+      imports: [
+        'vue',
+        {
+          'naive-ui': [
+            'useDialog',
+            'useMessage',
+            'useNotification',
+            'useLoadingBar'
+          ]
+        }
+      ]
+    }),
+    Components({
+      resolvers: [NaiveUiResolver()]
     }),
     copyVuePlugin(),
   ],
