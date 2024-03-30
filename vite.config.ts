@@ -87,7 +87,7 @@ function copyVuePlugin(): Plugin {
       copyFile(`node_modules/vue/dist/vue.esm-browser.prod.js`)
       copyFile(`node_modules/vue/dist/vue.runtime.esm-browser.js`)
       copyFile(`node_modules/vue/dist/vue.runtime.esm-browser.prod.js`)
-      copyFile(`node_modules/vue/server-renderer/dist/server-renderer.esm-browser.js`)
+      copyFile(`node_modules/vue/server-renderer/index.js`)
     },
   }
 }

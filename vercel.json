@@ -1,0 +1,10 @@
+{
+  "framework": "vite",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist",
+  "github": {
+    "silent": true
+  },
+  "ignoreCommand": "[ \"$VERCEL_ENV\" != production ]"
+}
