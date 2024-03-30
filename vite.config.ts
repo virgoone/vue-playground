@@ -1,4 +1,4 @@
-import fs from 'node:fs'
+import fs, { readFileSync } from 'node:fs'
 import path, { resolve } from 'node:path'
 import { type Plugin, defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -9,11 +9,28 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 const commit = execaSync('git', ['rev-parse', '--short=7', 'HEAD']).stdout
 
+const pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf-8'))
+
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir)
 }
 
+const getVersion = (name: string) => {
+  const [dep] = [pkg]
+    .map(pkg => pkg.dependencies[name] || pkg.devDependencies[name])
+    .filter(Boolean)
+
+  return dep && (/^\d/.test(dep) ? dep : dep.slice(1))
+}
+
 export default defineConfig({
+  define: {
+    __COMMIT__: JSON.stringify(commit),
+    __VUE_PROD_DEVTOOLS__: JSON.stringify(true),
+    __VUE_VERSION__: JSON.stringify(getVersion('vue')),
+    __TS_VERSION__: JSON.stringify(getVersion('typescript')),
+    __REPL_VERSION__: JSON.stringify(getVersion('@vue/repl'))
+  },
   resolve: {
     alias: [
       {
@@ -54,10 +71,6 @@ export default defineConfig({
     }),
     copyVuePlugin(),
   ],
-  define: {
-    __COMMIT__: JSON.stringify(commit),
-    __VUE_PROD_DEVTOOLS__: JSON.stringify(true),
-  },
   optimizeDeps: {
     exclude: ['@vue/repl'],
   },

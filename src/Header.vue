@@ -24,13 +24,11 @@ const emit = defineEmits([
 
 const { store } = props
 
-const currentCommit = __COMMIT__
-
 const vueVersion = computed(() => {
   if (store.loading) {
     return 'loading...'
   }
-  return store.vueVersion || `@${__COMMIT__}`
+  return store.vueVersion || __VUE_VERSION__
 })
 
 async function setVueVersion(v: string) {
@@ -75,14 +73,14 @@ function toggleDark() {
         label="TypeScript Version"
       />
       <VersionSelect
-        :model-value="vueVersion"
+        :model-value="store.vueVersion"
         @update:model-value="setVueVersion"
         pkg="vue"
         label="Vue Version"
       >
-        <li>
+        <!-- <li>
           <a @click="resetVueVersion">This Commit ({{ currentCommit }})</a>
-        </li>
+        </li> -->
         <li>
           <a
             href="https://app.netlify.com/sites/vue-sfc-playground/deploys"
